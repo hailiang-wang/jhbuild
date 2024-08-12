@@ -67,6 +67,7 @@ class PackageEntry:
 
     def write(self):
         # write info file
+        print("packagedb>> Write info", os.path.join(self.dirname, 'info'))
         fileutils.mkdir_with_parents(os.path.join(self.dirname, 'info'))
         writer = fileutils.SafeWriter(os.path.join(self.dirname, 'info', self.package))
         ET.ElementTree(self.to_xml()).write(writer.fp)
@@ -74,10 +75,16 @@ class PackageEntry:
         writer.commit()
 
         # write manifest
+        print("packagedb>> Write manifests", os.path.join(self.dirname, 'manifests'))
         fileutils.mkdir_with_parents(os.path.join(self.dirname, 'manifests'))
         writer = fileutils.SafeWriter(os.path.join(self.dirname, 'manifests', self.package))
-        writer.fp.write('\n'.join(self.manifest).encode('utf-8', 'backslashreplace') + b'\n')
-        writer.commit()
+        if self.manifest:
+            writer.fp.write('\n'.join(self.manifest).encode('utf-8', 'backslashreplace') + b'\n')
+            writer.commit()
+        else:
+            print("[WARN] manifest content\n")
+            print(self.manifest)
+            print("[ERROR] packagedb manifest is NONE")
 
     def remove(self):
         # remove info file
